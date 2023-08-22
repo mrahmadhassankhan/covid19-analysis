@@ -1,0 +1,1 @@
+ Are densely populated urban areas more affected by COVID-19 compared to rural areas?
