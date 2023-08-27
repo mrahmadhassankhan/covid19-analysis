@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import statistics
 import numpy as np
+import seaborn as sns
 
 
 path = 'https://raw.githubusercontent.com/mrahmadhassankhan/covid19-analysis/main/Processed%20Data%20File/Final_File.csv'
@@ -9,7 +10,6 @@ path = 'https://raw.githubusercontent.com/mrahmadhassankhan/covid19-analysis/mai
 df = pd.read_csv(path)
 
 # Calculations with outliers
-
 # Calculate affected people in rural and urban areas
 df["Affected_Rural"] = df["cases"] * (df["Rural"] / df["Total"])
 df["Affected_Urban"] = df["cases"] * (df["Urban"] / df["Total"])
@@ -62,16 +62,30 @@ print("Interquartile Range (Urban):", iqr_urban)
 print("Skewness (Rural):", skewness_rural)
 print("Skewness (Urban):", skewness_urban)
 
+# Calculating the IQR and 25th quantile and 75 quantile 
+q1_rural = df['Affected_Rural'].quantile(.25)
+q2_rural = df['Affected_Rural'].quantile(.75)
+iqr_rural = q2_rural - q1_rural
+upper_limit_rural = q2_rural + 1.5 * iqr_rural
+lower_limit_rural = q1_rural - 1.5 * iqr_rural
+print(upper_limit_rural)
+
+
+# Calculating the IQR and 25th quartile and 75 quartile
+q2_urban = df['Affected_Urban'].quantile(.25)
+q2_urban = df['Affected_Urban'].quantile(.75)
+iqr_urban = q2_urban - q2_urban
+upper_limit_urban = q2_urban + 1.5 * iqr_urban
+lower_limit_rural = q2_urban - 1.5 * iqr_urban
+print(upper_limit_urban)
 
 
 
-# After Removing Outliers
-
-filtered_data_rural = df[df["Affected_Rural"] < 20000000]
-filtered_data_urban = df[df["Affected_Urban"] < 9999999]
+#  Removing Outliers from dataset
+filtered_data_rural = df[df["Affected_Rural"] < upper_limit_rural]
+filtered_data_urban = df[df["Affected_Urban"] < upper_limit_urban]
 
 print("\n\nAfter Removing Outliers")
-
 # Recalculate total affected people after removing outliers
 total_affected_rural_filtered = filtered_data_rural["Affected_Rural"].sum()
 total_affected_urban_filtered = filtered_data_urban["Affected_Urban"].sum()
@@ -79,13 +93,13 @@ total_affected_urban_filtered = filtered_data_urban["Affected_Urban"].sum()
 print("Total affected in rural areas (filtered):", total_affected_rural_filtered)
 print("Total affected in urban areas (filtered):", total_affected_urban_filtered)
 
-median_rural = statistics.median(filtered_data_rural["Affected_Rural"])
+median_rural = statistics.median(filtered_data_rural["Affected_Rural"]) 
 median_urban = statistics.median(filtered_data_urban["Affected_Urban"])
 
-mean_rural = statistics.mean(filtered_data_rural["Affected_Rural"])
+mean_rural = statistics.mean(filtered_data_rural["Affected_Rural"]) 
 mean_urban = statistics.mean(filtered_data_urban["Affected_Urban"])
 
-mode_rural = statistics.mode(filtered_data_rural["Affected_Rural"])
+mode_rural = statistics.mode(filtered_data_rural["Affected_Rural"]) 
 mode_urban = statistics.mode(filtered_data_urban["Affected_Urban"])
 
 range_rural = np.ptp(filtered_data_rural["Affected_Rural"])  # Range
@@ -97,10 +111,7 @@ variance_urban = np.var(filtered_data_urban["Affected_Urban"])
 std_dev_rural = np.std(filtered_data_rural["Affected_Rural"])  # Standard Deviation
 std_dev_urban = np.std(filtered_data_urban["Affected_Urban"])
 
-iqr_rural = np.percentile(filtered_data_rural["Affected_Rural"], 75) - np.percentile(filtered_data_rural["Affected_Rural"], 25)  # Interquartile Range
-iqr_urban = np.percentile(filtered_data_urban["Affected_Urban"], 75) - np.percentile(filtered_data_urban["Affected_Urban"], 25)
-
-skewness_rural = filtered_data_rural["Affected_Rural"].skew()
+skewness_rural = filtered_data_rural["Affected_Rural"].skew()   # Skewness
 skewness_urban = filtered_data_urban["Affected_Urban"].skew()
 
 print("Median (Rural):", median_rural)
@@ -162,7 +173,6 @@ plt.title("Affected People in Urban (Filtered)")
 plt.show()
 
 # Below Plots are without outliers filtered data 
-
 # Bar Plot
 labels = ['Rural', 'Urban']
 values = [filtered_data_rural["Affected_Rural"].sum(), filtered_data_urban["Affected_Urban"].sum()]
@@ -175,7 +185,7 @@ plt.show()
 
 #Histogram for Rural
 plt.figure(figsize=(8, 6))
-plt.hist(filtered_data_rural["Affected_Rural"], bins=5, color='blue', edgecolor='black')
+plt.hist( filtered_data_rural["Affected_Rural"], bins=5, color='blue', edgecolor='black')
 plt.xlabel("Affected People")
 plt.ylabel("Frequency")
 plt.title("Histogram of Affected People in Rural")
@@ -188,4 +198,5 @@ plt.ylabel("Frequency")
 plt.title("Histogram of Affected People in Urban")
 plt.show()
 
-
+plt.scatter( data=filtered_data_rural['Affected_Rural'])
+plt.show()
