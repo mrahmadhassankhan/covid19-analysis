@@ -197,6 +197,3 @@ plt.xlabel("Affected People")
 plt.ylabel("Frequency")
 plt.title("Histogram of Affected People in Urban")
 plt.show()
-
-plt.scatter( data=filtered_data_rural['Affected_Rural'])
-plt.show()
